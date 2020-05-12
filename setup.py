@@ -18,3 +18,4 @@ setup(
     url='https://github.com/chriscave/cave-plots',
     license=license,
     packages=find_packages()
+)
