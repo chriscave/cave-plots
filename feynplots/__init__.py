@@ -1,4 +1,4 @@
-from .module import model_chart
+from .main import model_chart
 
 __all__ = [
     'model_chart'
