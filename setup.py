@@ -9,7 +9,7 @@ with open('LICENSE') as f:
     license = f.read()
 
 setup(
-    name='Feyn-plots',
+    name='feynplots',
     version='0.1.0',
     description='Charting Feyn graphs',
     long_description=readme,
