@@ -231,7 +231,7 @@ def model_chart(graph,data,colour=None,figsize=(20,10)):
     The scatter are the datapoints
     '''
     interactions = [graph[i] for i in range(len(graph)) if (graph[i].type != 'fixed' and graph[i].type !='cat')] #Every interaction the requires a chart
-    ie = model_ev(graph,data) #every activation value for every datapoint
+    ie = _model_ev(graph,data) #every activation value for every datapoint
     output_reg = graph[-1] #The output register
 
     fig = plt.figure(figsize=figsize) #The figure that has all the subplots
