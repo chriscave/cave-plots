@@ -14,7 +14,7 @@ requirements = ['feyn == 1.1.*']
 
 setup(
     name='feynplots',
-    version='0.1.0',
+    version='0.0.1',
     description='Charting Feyn graphs',
     long_description=readme,
     author='Chris Cave',
