@@ -31,7 +31,7 @@ class Funct:
         elif self.type == 'sine':
             return self.sine(x=input0)
         elif self.type == 'gaussian':
-            return self.gauss(x=input0,y=input1)
+            return self.gaussian(x=input0,y=input1)
         elif self.type == 'tanh':
             return self.tanh(x=input0,y=input1)
         elif self.type == 'multiply':
@@ -60,7 +60,7 @@ class Funct:
         z = np.multiply(self.state['w0'],x) + np.multiply(self.state['w1'],y) + self.state['bias']
         return np.tanh(z)
     
-    def gauss(self,x,y):
+    def gaussian(self,x,y):
         '''
         The gauss function is of the form exp( - [(x-center0)^2 / w0 + (y-center1)^2 / w1] )
         It's here where we need to know how many inputs the function has
