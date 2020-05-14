@@ -1,4 +1,4 @@
-from .main import model_chart
+from .main import GraphChart
 
 __all__ = [
     'GraphChart'
