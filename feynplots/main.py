@@ -190,6 +190,119 @@ class Chart:
         fig.colorbar(cax) #Adds the colour bar to the axes
         return fig,ax,cax
 
+class GraphChart:
+    def __init__(self,graph):#,data,colour=None,figsize=(20,10)):
+        self.graph = graph
+        #self.data = data
+        #if colour is None:
+        #    self.colour =  data[output_reg.name]  #colour of the plots
+        #else:
+        #    self.colour = colour
+        #self.fig = plt.figure(figsize=figsize)
+
+    def model_ev(self,data):
+        self.data = data
+        interactions_evaluation = np.zeros((len(self.data),len(self.graph)))
+        destandardiser = Funct(self.graph[-1]) #This is the destandardiser so that the output register activation is actually the destandardised value
+        for i in range(len(self.data)):
+            self.graph.predict(self.data[i:i+1]) #Activation only remembers the last point that has gone through the graph. So we need to predict first...
+            for j in range(len(self.graph)):
+                interactions_evaluation[i][j] = self.graph[j].activation #Then find the activation value
+            interactions_evaluation[i][-1] = destandardiser.ev(interactions_evaluation[i][-1]) #This is destandardising the last value in each row
+        self.eval = interactions_evaluation
+    
+    def plot(self,colour = None, figsize=(30,20)):
+        fig = plt.figure(figsize=figsize) #The figure that has all the subplots
+        coords, max_depth, max_height = GraphChart.chart_locations(self.graph)
+        gs = GridSpec(max_height,max_depth,figure=fig)
+
+        output_reg = self.graph[-1] #The output register
+        if colour is None:
+            colour =  self.data[output_reg.name]
+
+        interactions = [self.graph[i] for i in range(len(self.graph)) if (self.graph[i].type != 'fixed' and self.graph[i].type !='cat')] #Every interaction the requires a chart
+
+        for interaction, coord in zip(interactions,coords):
+            location = interaction._location
+            chart = Chart(Funct(interaction))
+            inputs = []
+            input_scalar_ranges = []
+            for source in interaction.sources:
+                '''
+                This goes through each source of the interaction and determines the inputs 
+                '''
+                if self.graph[source].type == 'fixed':
+                    '''
+                    When the source is a numerical register then the inputs comes from the data.
+                    '''
+                    inputs.append(self.data[self.graph[source].name]) #Input
+                    feature_min = self.graph[source].state._to_dict()['feature_min']
+                    feature_max = self.graph[source].state._to_dict()['feature_max']
+                    input_scalar_ranges.append([[feature_min, feature_max],[-1,1]]) #The ranges of the input for the chart
+                elif self.graph[source].type == 'cat':
+                    '''
+                    When the source is a categorical register then the inputs come from the weights at that register.
+                    Fortunately this is done by the activation function at the register
+                    '''
+                    inputs.append([self.eval[i][source] for i in range(len(self.data))]) #Inputs
+                    weight_min = min(self.graph[source].state._to_dict()['categories'], key=lambda x : x[1])[1] #minimum value
+                    weight_max = max(self.graph[source].state._to_dict()['categories'], key=lambda x : x[1])[1] #maximum value
+                    input_scalar_ranges.append([[weight_min,weight_max],[weight_min,weight_max]]) #Ranges of the input for the chart
+                else:
+                    '''
+                    When the source is from an interaction that is not a register then we retrieve the inputs from the activation function
+                    '''
+                    inputs.append([self.eval[i][source] for i in range(len(self.data))]) #Inputs
+                    input_scalar_ranges.append([[-1,1],[-1,1]]) #Range of input
+                
+            chart.set_input_scalar_ranges(input_scalar_ranges)
+            #chart.set_input_range(input_ranges) #Setting input ranges
+            
+            if location == (len(self.graph) - 2):
+                '''
+                If the interaction is the final one before the output register then we need to destandardise the output to the range of the target variable
+                '''
+                feature_min = output_reg.state._to_dict()['feature_min']
+                feature_max = output_reg.state._to_dict()['feature_max']
+                chart.set_output_scalar_ranges([[-1,1],[feature_min,feature_max]])
+                #chart.set_output_scalar_range(output_range=(output_reg.state._to_dict()['feature_min'], output_reg.state._to_dict()['feature_max'])) #output range
+            else:
+                '''
+                Otherwise the output range is [-1,1]
+                '''
+                chart.set_output_scalar_ranges()
+
+            fig, ax, cax = chart.ev(inputs,colour,fig,gs,coord) #this now plots and evaluates the chart from this interaction.
+            
+            #Below is labelling the axes
+            if len(inputs) == 1:
+                ax.set(xlabel=self.graph[interaction.sources[0]].name + ', loc: ' + str(self.graph[interaction.sources[0]]._location),
+                    ylabel=interaction.name + ', loc: ' + str(interaction._location),
+                    title='Interaction ' + str(interaction._location)  + ': ' + str(interaction.name))
+            else:
+                ax.set(xlabel=self.graph[interaction.sources[0]].name + ', loc: ' + str(self.graph[interaction.sources[0]]._location),
+                    ylabel=self.graph[interaction.sources[1]].name + ', loc: ' + str(self.graph[interaction.sources[1]]._location),
+                    title='Interaction ' + str(interaction._location) + ': ' + str(interaction.name))
+
+    @staticmethod
+    def chart_locations(graph):
+        '''
+        Given a graph, this provides the coordinates needed for the gridreference in a plot
+        '''
+        precoord1 = [graph[i].depth for i in range(len(graph)) if (graph[i].type != 'fixed' and graph[i].type !='cat')] #depth of each interaction that is not a register
+        max_height = max(Counter(precoord1).values()) #maximum amount of interactions in a row in the graph
+        max_depth = max(precoord1)+1 #maximum amount of interactions in a columns in the graph
+        precoord0 = []
+        for number in list(Counter(precoord1).values()): 
+            '''
+            To get the correct the coordinates the count has to restart to zero each time we move columns.
+            '''
+            precoord0 += [i for i in range(number)]        
+        return list(zip(precoord0,precoord1)), max_depth, max_height
+
+
+#############################################################
+
 
 def chart_locations(graph):
     '''
