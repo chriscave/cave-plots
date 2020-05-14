@@ -20,8 +20,8 @@ Here's a small summary of how to use this package.
 ```python
 from feynplots import GraphChart
 
-graphplot = GraphChart(g) #initiates the chart instance
-graphplot.model_ev(data) #evaluates every interaction at every datapoint
+graphplot = GraphChart(g) #initiates the chart instance, parameters g: Feyn Graph
+graphplot.model_ev(data) #evaluates every interaction at every datapoint, parameters data: pandas DataFrame
 
 graphplot.plot(figsize = (30,20)) #plots the figure
 ```
