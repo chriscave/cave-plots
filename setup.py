@@ -17,6 +17,7 @@ setup(
     version='0.0.2',
     description='Charting Feyn graphs',
     long_description=readme,
+    long_description_content_type="text/markdown",
     author='Chris Cave',
     author_email='chris.cave@abzu.ai',
     url='https://github.com/chriscave/cave-plots',
