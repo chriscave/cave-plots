@@ -18,7 +18,10 @@ Here's a couple of comments on this plot
 Here's a small summary of how to use this package.
 
 ```python
-from feynplots import model_chart
+from feynplots import GraphChart
 
-model_chart(Feyngraph, data, figsize)
+graphplot = GraphChart(g) #initiates the chart instance
+graphplot.model_ev(data) #evaluates every interaction at every datapoint
+
+graphplot.plot(figsize = (30,20)) #plots the figure
 ```
