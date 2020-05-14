@@ -1,5 +1,5 @@
-from .main import GraphChart
+from .main import GraphChart, model_chart
 
 __all__ = [
-    'GraphChart'
+    'GraphChart','model_chart
 ]
