@@ -237,7 +237,7 @@ class GraphPlot:
         alpha -- opacity of every scatter point. Takes values between 0 and 1.
 
         Returns:
-        matplotlib.pyplot.figure --  interactions with scatter plot of datapoints.
+        matplotlib.pyplot.figure -- A figure containing scatter plot of datapoints of all interactions in graph.
         """
         
         fig = plt.figure(figsize=figsize) #The figure that has all the subplots
