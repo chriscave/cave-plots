@@ -167,7 +167,7 @@ class Chart:
             ax.clabel(CS, inline=1, fontsize=10) #label for contour plot
             return fig, ax
     
-    def ev(self,inputs,colour,fig,gs,loc):    
+    def ev(self,inputs,colour,fig,gs,loc,alpha):    
         '''
         Once we have the axis with the plot of the function, we now scatter the plot with the inputs. This is called evaluating the chart.
         Colour is a collection of numbers with the same size as an input.
@@ -185,27 +185,21 @@ class Chart:
                         Chart.minmaxscalar(inputs[0],scalar_ranges=self.input_scalar_range0)
                         ),
                         scalar_ranges=self.output_scalar_range),
-                        marker='o',c=colour
+                        alpha = alpha, marker='o',c=colour
             )
         else:
             '''
             Two dimensional plot. Observe that there isn't any evalation of the Function here.
             '''
-            cax = ax.scatter(x=inputs[0],y=inputs[1],c=colour)
+            cax = ax.scatter(x=inputs[0],y=inputs[1],alpha=alpha,c=colour)
             
         fig.colorbar(cax) #Adds the colour bar to the axes
         return fig,ax,cax
 
 class GraphPlot:
-    def __init__(self,graph):#,data,colour=None,figsize=(20,10)):
+    def __init__(self,graph):
         self.graph = graph
-        #self.data = data
-        #if colour is None:
-        #    self.colour =  data[output_reg.name]  #colour of the plots
-        #else:
-        #    self.colour = colour
-        #self.fig = plt.figure(figsize=figsize)
-
+        
     def model_ev(self,data):
         '''
         Given a graph with n interactions and the database with k rows, the returns a k x n numpy array where at the ith,jth point
@@ -221,7 +215,7 @@ class GraphPlot:
             interactions_evaluation[i][-1] = destandardiser.ev(interactions_evaluation[i][-1]) #This is destandardising the last value in each row
         self.eval = interactions_evaluation
     
-    def plot(self,colour = None, figsize=(30,20)):
+    def plot(self,colour = None, figsize=(30,20),alpha=None):
         '''
         This produces a single figure with several subplots that are arranged somewhat like the graph.
         A subplot is either from an interaction with a single input or from two inputs.
@@ -277,8 +271,7 @@ class GraphPlot:
                     input_scalar_ranges.append([[-1,1],[-1,1]]) #Range of input
                 
             chart.set_input_scalar_ranges(input_scalar_ranges)
-            #chart.set_input_range(input_ranges) #Setting input ranges
-            
+                        
             if location == (len(self.graph) - 2):
                 '''
                 If the interaction is the final one before the output register then we need to destandardise the output to the range of the target variable
@@ -286,14 +279,13 @@ class GraphPlot:
                 feature_min = output_reg.state._to_dict()['feature_min']
                 feature_max = output_reg.state._to_dict()['feature_max']
                 chart.set_output_scalar_ranges([[-1,1],[feature_min,feature_max]])
-                #chart.set_output_scalar_range(output_range=(output_reg.state._to_dict()['feature_min'], output_reg.state._to_dict()['feature_max'])) #output range
             else:
                 '''
                 Otherwise the output range is [-1,1]
                 '''
                 chart.set_output_scalar_ranges()
 
-            fig, ax, cax = chart.ev(inputs,colour,fig,gs,coord) #this now plots and evaluates the chart from this interaction.
+            fig, ax, cax = chart.ev(inputs,colour,fig,gs,coord,alpha) #this now plots and evaluates the chart from this interaction.
             
             #Below is labelling the axes
             if len(inputs) == 1:
