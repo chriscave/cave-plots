@@ -26,12 +26,13 @@ from feynplots import GraphPlot
 
 import sklearn.datasets
 import pandas as pd
+import numpy as np
 
 #Importing the dataset from sklearn and turning it into a Pandas DataFrame
 dataset = sklearn.datasets.fetch_california_housing()
 data = pd.DataFrame(data=dataset.data,columns=dataset.feature_names)
 price = pd.DataFrame(data=dataset.target, columns = ['price'])
-cal_housing = pd.concat([data,target],axis=1)
+cal_housing = pd.concat([data,price],axis=1)
 
 #Splitting into a train and test set
 train, test = tools.split(cal_housing,ratio=[4,1])
@@ -54,7 +55,7 @@ for loop in range(updates):
     best = qgraph.select(train,n=1)[0]
     ql.update(best)
     
-best = qgraph.select(train, n = 1)
+best = qgraph.select(train, n = 1)[0]
 
 #Using the package feynplots. First initiates the instance with a Feyn graph
 graphplot = GraphPlot(best) 
@@ -66,7 +67,16 @@ graphplot.model_ev(train)
 graphplot.plot(figsize = (30,20)) 
 ```
 ##Analysis of plots
-Here we explain the output of the function GraphPlot.plot(). 
+Here we explain the output of the function GraphPlot.plot(). It is a matplotlib figure that contains every plot of every interaction in the Feyn Graph. We will start off with an example of a Feyn Graph: 
+
+```python
+example = ql.select(train, n = 1)[0]
+example
+```
+
+
+
+
 
 an example of a Feyn graph
 
@@ -75,11 +85,11 @@ A package to see what's going on inside graphs produced from a QLattice. A QLatt
 
 A graph produced from the QLattice typically looks like so
 
-![A typical graph](calhousinggraph.png)
+
 
 This is a model for the California housing dataset. Each interaction takes either one or two variables as input and has a single output. This means that we can plot each interaction. Let's do that!
 
-![Charts of graph](calhousinggraphchart.png)
+
 Here's a couple of comments on this plot
 Each dot corresponds to a datapoint in the training set. The colour corresponds to the actual value of the target variable.
 The x-axis corresponds to the variable x0;
