@@ -74,7 +74,7 @@ Here we explain the output of the function GraphPlot.plot(). It is a matplotlib 
 example = ql.select(train, n = 1)[0]
 example
 ```
-![Example graph](calhousinggraph.png) 
+![Example graph](calhousinggraph1.png) 
 
 Now we see the graph plot
 ```python
