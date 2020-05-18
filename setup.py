@@ -14,9 +14,9 @@ requirements = ['feyn == 1.1.*']
 
 setup(
     name='feynplots',
-    version='0.0.3',
-    description='Charting Feyn graphs',
-    long_description=readme,
+    version='1.0.0',
+    description='Plotting Feyn graphs',
+    long_description='Feynplots is a package to visualise each interaction in a Feyn Graph. See [here for more on starting with Feyn](https://docs.abzu.ai/docs/guides/quick_start.html) and [understanding the QLattice.](https://docs.abzu.ai/docs/guides/qlattice.html)',
     long_description_content_type='text/markdown',
     author='Chris Cave',
     author_email='chris.cave@abzu.ai',
