@@ -190,7 +190,7 @@ class Chart:
         fig.colorbar(cax) #Adds the colour bar to the axes
         return fig,ax,cax
 
-class GraphChart:
+class GraphPlot:
     def __init__(self,graph):#,data,colour=None,figsize=(20,10)):
         self.graph = graph
         #self.data = data
@@ -213,7 +213,7 @@ class GraphChart:
     
     def plot(self,colour = None, figsize=(30,20)):
         fig = plt.figure(figsize=figsize) #The figure that has all the subplots
-        coords, max_depth, max_height = GraphChart.chart_locations(self.graph)
+        coords, max_depth, max_height = GraphPlot.chart_locations(self.graph)
         gs = GridSpec(max_height,max_depth,figure=fig)
 
         output_reg = self.graph[-1] #The output register
