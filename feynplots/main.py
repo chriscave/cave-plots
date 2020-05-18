@@ -311,7 +311,7 @@ class GraphPlot:
                 ax.set(xlabel=self.graph[interaction.sources[0]].name + ', loc: ' + str(self.graph[interaction.sources[0]]._location),
                     ylabel=self.graph[interaction.sources[1]].name + ', loc: ' + str(self.graph[interaction.sources[1]]._location),
                     title='Interaction ' + str(interaction._location) + ': ' + str(interaction.name))
-            return fig
+        return fig
 
     @staticmethod
     def _chart_locations(graph):

@@ -65,7 +65,7 @@ graphplot = GraphPlot(best)
 graphplot.graph_eval(train)
 
 #plots the figure the includes every interaction
-graphplot.plot(figsize = (30,20)) 
+fig = graphplot.plot(figsize = (30,20)) 
 ```
 ## Details of plot
 Here we explain the output of the function GraphPlot.plot(). It is a matplotlib figure that contains every plot of every interaction in the Feyn Graph. We will start off with an example of a Feyn Graph: 
@@ -80,13 +80,13 @@ Now we see the graph plot
 ```python
 graphplot = GraphPlot(example)
 graphplot.graph_eval(train)
-graphplot.plot(figsize = (30,20)) 
+fig = graphplot.plot(figsize = (30,20)) 
 ```
 ![Example plot](calhousinggraphplot.png) 
 
 Observe how the positioning of the plots in the figure matches the location of the interactions in the graph. Below is an annotation and a description of a plot of an interaction with two inputs
 
-![Annotated plot](interactionplot.png) 
+![Annotated plot](interactionplot1.png) 
 
 * The title of the plot is the name and location in the graph of the interaction. In this case it is a *multiply* interaction and is at *location 5* in the graph.
 * The label of each axis is the name of the input and their location in the graph. In this case it is *AveBedrms* and *MedInc*.
