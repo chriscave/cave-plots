@@ -200,7 +200,7 @@ class GraphPlot:
     def __init__(self,graph):
         self.graph = graph
         
-    def model_ev(self,data):
+    def graph_eval(self,data):
         '''
         Given a graph with n interactions and the database with k rows, the returns a k x n numpy array where at the ith,jth point
         is the value of datapoint i at interaction j. At the moment the activation at the output register is just a repeat of the last non-register interaction
