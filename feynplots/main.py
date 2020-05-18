@@ -147,6 +147,11 @@ class Chart:
             '''
             Contour plot
             '''
+            if self.Funct.type == 'gaussian' and self.output_scalar_range[1] == [-1,1]:
+                levels = [0.1,0.3,0.5,0.7,0.9]
+            else:
+                levels = None
+
             x_mesh, y_mesh = np.meshgrid(np.linspace(self.input_scalar_range0[0][0],self.input_scalar_range0[0][1],50),
                                          np.linspace(self.input_scalar_range1[0][0],self.input_scalar_range1[0][1],50))
             CS = ax.contour(
@@ -157,7 +162,7 @@ class Chart:
                         Chart.minmaxscalar(y_mesh,scalar_ranges=self.input_scalar_range1)
                         ),
                         scalar_ranges=self.output_scalar_range),
-                        levels = 15
+                        levels = levels
                         )
             ax.clabel(CS, inline=1, fontsize=10) #label for contour plot
             return fig, ax
