@@ -4,7 +4,7 @@ Feynplots is a package to visualise each interaction in a Feyn Graph. See [here 
 ## Install
 This can be installed from [PyPi.](https://pypi.org/project/feynplots/)
 ```
-richard@feyn:~$ pip install feyn
+richard@feyn:~$ pip install feynplots
 ```
 
 
@@ -13,9 +13,9 @@ Every interaction in a Feyn Graph has either one or two input variables. This me
 
 When an interaction has one input then the axis of the plot is the input on the x-axis and the output on the y-axis.
 
-When an interaction has two inputs then the axes of the plot are both inputs and then the contour lines represent the output of the interaction
+When an interaction has two inputs then the axes of the plot are both inputs and then the contour lines represent the output of the interaction.
 
-The purpose of this package is to return a figure that contains every plot of an interaction in a Feyn Graph.
+The purpose of this package is to return a figure that contains every plot of each interaction in a Feyn Graph.
 
 ##Use
 The following demonstrates how to use the package in a full workflow with the QLattice. We use the California housing dataset as an example.
@@ -45,7 +45,7 @@ ql.reset()
 for cols in cal_housing.columns:
     ql.get_register(name=cols)
     
-#Extract, fitting, updating and repeating
+#Extract, fit, update and repeat
 updates = 10
 epochs = 15
 target = 'price'
@@ -55,47 +55,54 @@ for loop in range(updates):
     best = qgraph.select(train,n=1)[0]
     ql.update(best)
     
+#This is the graph we will plot
 best = qgraph.select(train, n = 1)[0]
 
 #Using the package feynplots. First initiates the instance with a Feyn graph
 graphplot = GraphPlot(best) 
 
 #evaluates every interaction at every datapoint in a pandas DataFrame
-graphplot.model_ev(train)
+graphplot.graph_eval(train)
 
 #plots the figure the includes every interaction
 graphplot.plot(figsize = (30,20)) 
 ```
-##Analysis of plots
+##Details of plot
 Here we explain the output of the function GraphPlot.plot(). It is a matplotlib figure that contains every plot of every interaction in the Feyn Graph. We will start off with an example of a Feyn Graph: 
 
 ```python
 example = ql.select(train, n = 1)[0]
 example
 ```
+![Example graph](calhousinggraph.png) 
 
+Now we see the graph plot
+```python
+graphplot = GraphPlot(example)
+graphplot.graph_eval(train)
+graphplot.plot(figsize = (30,20)) 
+```
+![Example plot](calhousinggraphplot.png) 
 
+Observe how the positioning of the plots in the figure matches the location of the interactions in the graph. Below is an annotation and a description of a plot of an interaction with two inputs
 
+![Annotated plot](interactionplot.png) 
 
+* The title of the plot is the name and location in the graph of the interaction. In this case it is a *multiply* interaction and is at *location 5* in the graph.
+* The label of each axis is the name of the input and their location in the graph. In this case it is *AveBedrms* and *MedInc*.
+* The scale of each axis is the scale of the input.
+* The lines are the values of the output. This is a [contour plot](https://en.wikipedia.org/wiki/Contour_line) where the 'height' of the plot represents the value of the output of the interaction.
+* A datapoint is represented by an 'o'. By default the colour scale of each datapoint is the actual value of the target variable.
 
-an example of a Feyn graph
+There's a very important point to make here. Feyn graphs automatically performs MinMaxScalar to standardise the inputs to be between -1 and 1 and then destandardise the output using MinMaxScalar to be between the target variable ranges.
 
+However these plots do not show the above standardisation. When an interaction takes an input from a feature variable, the scale on the axes are taken from the feature range and **not** the standardised range of [-1,1]. The output of these plots **are** evaluated at the standardised feature value. Likewise the output scale of the final interaction is on the scale of the target feature, not the standardised feature.
+
+The purpose of this is to make the plots more readable and show datapoints on the scale that are more recognisable than the standardised scale
+
+For interactions within the hidden layer, this is not a problem because each interaction takes values in the interval [-1,1] and outputs values in the interval [-1,1].
+
+The case for interactions that take only one input, the plots are very similar. The main difference is that the y-axis is the output value and the line is the line plot of the function across the range of the input.
 
 A package to see what's going on inside graphs produced from a QLattice. A QLattice is a quantum mechanics simulator produced by [Abzu](https://www.abzu.ai/) that produces models for datasets in an evolutionary process. [You can read more about the QLattice here](https://docs.abzu.ai/docs/guides/qlattice.html). Feyn is the package used to interact with the QLattice and you can find more about [getting started with it here](https://docs.abzu.ai/docs/guides/quick_start.html).
-
-A graph produced from the QLattice typically looks like so
-
-
-
-This is a model for the California housing dataset. Each interaction takes either one or two variables as input and has a single output. This means that we can plot each interaction. Let's do that!
-
-
-Here's a couple of comments on this plot
-Each dot corresponds to a datapoint in the training set. The colour corresponds to the actual value of the target variable.
-The x-axis corresponds to the variable x0;
-The y-axis corresponds to the variable x1;
-The scale on each axis the scale of each feature;
-The contour lines correspond to the value of the output at the (x0,x1) coordinate.
-
-Here's a small summary of how to use this package.
 
