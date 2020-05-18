@@ -156,7 +156,8 @@ class Chart:
                         Chart.minmaxscalar(x_mesh,scalar_ranges=self.input_scalar_range0),
                         Chart.minmaxscalar(y_mesh,scalar_ranges=self.input_scalar_range1)
                         ),
-                        scalar_ranges=self.output_scalar_range)
+                        scalar_ranges=self.output_scalar_range),
+                        levels = 15
                         )
             ax.clabel(CS, inline=1, fontsize=10) #label for contour plot
             return fig, ax
@@ -226,6 +227,8 @@ class GraphPlot:
         The scatter are the datapoints
         '''
         fig = plt.figure(figsize=figsize) #The figure that has all the subplots
+        plt.rc('axes', labelsize=14)    # fontsize of the x and y labels
+
         coords, max_depth, max_height = GraphPlot.chart_locations(self.graph)
         gs = GridSpec(max_height,max_depth,figure=fig)
 
