@@ -1,5 +1,5 @@
 # Feynplots
-Feynplots is a package to visualise each interaction in a Feyn Graph. See [here for more on starting with Feyn](https://docs.abzu.ai/docs/guides/quick_start.html) and [understanding the QLattice.](https://docs.abzu.ai/docs/guides/qlattice.html)
+Feynplots is a package to visualise each interaction in a Feyn Graph. This is an add-on to Feyn and the QLattice. See [here for more on starting with Feyn](https://docs.abzu.ai/docs/guides/quick_start.html) and [understanding the QLattice.](https://docs.abzu.ai/docs/guides/qlattice.html)
 
 ## Install
 This can be installed from [PyPi.](https://pypi.org/project/feynplots/)
@@ -17,7 +17,7 @@ When an interaction has two inputs then the axes of the plot are both inputs and
 
 The purpose of this package is to return a figure that contains every plot of each interaction in a Feyn Graph.
 
-##Use
+## Use
 The following demonstrates how to use the package in a full workflow with the QLattice. We use the California housing dataset as an example.
 ```python
 import feyn
@@ -67,7 +67,7 @@ graphplot.graph_eval(train)
 #plots the figure the includes every interaction
 graphplot.plot(figsize = (30,20)) 
 ```
-##Details of plot
+## Details of plot
 Here we explain the output of the function GraphPlot.plot(). It is a matplotlib figure that contains every plot of every interaction in the Feyn Graph. We will start off with an example of a Feyn Graph: 
 
 ```python
@@ -103,6 +103,3 @@ The purpose of this is to make the plots more readable and show datapoints on th
 For interactions within the hidden layer, this is not a problem because each interaction takes values in the interval [-1,1] and outputs values in the interval [-1,1].
 
 The case for interactions that take only one input, the plots are very similar. The main difference is that the y-axis is the output value and the line is the line plot of the function across the range of the input.
-
-A package to see what's going on inside graphs produced from a QLattice. A QLattice is a quantum mechanics simulator produced by [Abzu](https://www.abzu.ai/) that produces models for datasets in an evolutionary process. [You can read more about the QLattice here](https://docs.abzu.ai/docs/guides/qlattice.html). Feyn is the package used to interact with the QLattice and you can find more about [getting started with it here](https://docs.abzu.ai/docs/guides/quick_start.html).
-
