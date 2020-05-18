@@ -197,14 +197,24 @@ class Chart:
         return fig,ax,cax
 
 class GraphPlot:
+    """
+    A package to plot every interaction of a feyn._graph.Graph. To obtain the plot one first initalises the object with the graph.
+    Then one uses graph_eval to evaluate every interaction at each datapoint. Then one uses plot to plot the figure.
+
+    Keyword arguments:
+    graph -- A feyn._graph.Graph object
+    """
     def __init__(self,graph):
         self.graph = graph
         
     def graph_eval(self,data):
-        '''
-        Given a graph with n interactions and the database with k rows, the returns a k x n numpy array where at the ith,jth point
-        is the value of datapoint i at interaction j. At the moment the activation at the output register is just a repeat of the last non-register interaction
-        '''
+        """
+        Evaluates each interaction in the graph at every datapoint.
+
+        Keyword arguments:
+        data -- Can be either a dict mapping register names to value arrays, or a pandas.DataFrame. Evaluates each interaction of each datapoint.
+        Must include the target variable for default colour behaviour
+        """ 
         self.data = data
         interactions_evaluation = np.zeros((len(self.data),len(self.graph)))
         destandardiser = Funct(self.graph[-1]) #This is the destandardiser so that the output register activation is actually the destandardised value
@@ -216,19 +226,24 @@ class GraphPlot:
         self.eval = interactions_evaluation
     
     def plot(self,colour = None, figsize=(30,20),alpha=None):
-        '''
-        This produces a single figure with several subplots that are arranged somewhat like the graph.
-        A subplot is either from an interaction with a single input or from two inputs.
-        If its one input then the subplot has on the x-axis the input and the y-axis the output of the function in the interaction.
-        The line is the function and the scatter are the datapoints
+        """
+        Creates a figure that contains all plots of interactions
 
-        If its two inputs then the subplot has on the x and y-axis the inputs and the output is represented as contour plots.
-        The scatter are the datapoints
-        '''
+        Keyword arguments:
+        colour -- colour of scatter plot. An array of numbers that is the same length of the data that the object has been evaluated on.
+        Default colour is the target variable of the data.
+
+        figsize -- a tuple that determines the size of the figure
+        alpha -- opacity of every scatter point. Takes values between 0 and 1.
+
+        Returns:
+        matplotlib.pyplot.figure --  interactions with scatter plot of datapoints.
+        """
+        
         fig = plt.figure(figsize=figsize) #The figure that has all the subplots
         plt.rc('axes', labelsize=14)    # fontsize of the x and y labels
 
-        coords, max_depth, max_height = GraphPlot.chart_locations(self.graph)
+        coords, max_depth, max_height = GraphPlot._chart_locations(self.graph)
         gs = GridSpec(max_height,max_depth,figure=fig)
 
         output_reg = self.graph[-1] #The output register
@@ -296,9 +311,10 @@ class GraphPlot:
                 ax.set(xlabel=self.graph[interaction.sources[0]].name + ', loc: ' + str(self.graph[interaction.sources[0]]._location),
                     ylabel=self.graph[interaction.sources[1]].name + ', loc: ' + str(self.graph[interaction.sources[1]]._location),
                     title='Interaction ' + str(interaction._location) + ': ' + str(interaction.name))
+            return fig
 
     @staticmethod
-    def chart_locations(graph):
+    def _chart_locations(graph):
         '''
         Given a graph, this provides the coordinates needed for the gridreference in a plot
         '''
