@@ -73,7 +73,7 @@ graphplot = GraphPlot(best)
 graphplot.graph_eval(dataset1)
 fig = graphplot.plot(figsize = (30,20))
 ...
-#if you want to plot another dataset with the same graph
+#if you want to plot another dataset with the same graph then first it needs to be evaluated with the new dataset
 graphplot.graph_eval(dataset2)
 fig2 = graphplot.plot(figsize = (30,20))
 ```
