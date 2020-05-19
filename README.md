@@ -67,6 +67,16 @@ graphplot.graph_eval(train)
 #plots the figure the includes every interaction
 fig = graphplot.plot(figsize = (30,20)) 
 ```
+Every time you want to plot different datapoints, the object graphplot needs to first be evaluated at the different datapoints and then plotted.
+```
+graphplot = GraphPlot(best) 
+graphplot.graph_eval(dataset1)
+fig = graphplot.plot(figsize = (30,20))
+...
+#if you want to plot another dataset with the same graph
+graphplot.graph_eval(dataset2)
+fig2 = graphplot.plot(figsize = (30,20))
+```
 ## Details of plot
 Here we explain the output of the function GraphPlot.plot(). It is a matplotlib figure that contains every plot of every interaction in the Feyn Graph. We will start off with an example of a Feyn Graph: 
 
