@@ -67,7 +67,7 @@ graphplot.graph_eval(train)
 #plots the figure the includes every interaction
 fig = graphplot.plot(figsize = (30,20)) 
 ```
-Every time you want to plot different datapoints, the object graphplot needs to first be evaluated at the different datapoints and then plotted.
+To plot a different dataset,graphplot needs to be evaluated on the different dataset before it can be plotted.
 ```
 graphplot = GraphPlot(best) 
 graphplot.graph_eval(dataset1)
