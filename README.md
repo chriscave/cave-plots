@@ -1,5 +1,5 @@
 # Feynplots
-Feynplots is a package to visualise each interaction in a Feyn Graph. This is an add-on to Feyn and the QLattice. See [here for more on starting with Feyn](https://docs.abzu.ai/docs/guides/quick_start.html) and [understanding the QLattice.](https://docs.abzu.ai/docs/guides/qlattice.html)
+Feynplots is a package to visualise each interaction in a Feyn Graph. This is an extra to Feyn and the QLattice. See [here for more on starting with Feyn](https://docs.abzu.ai/docs/guides/quick_start.html) and [understanding the QLattice.](https://docs.abzu.ai/docs/guides/qlattice.html)
 
 ## Install
 This can be installed from [PyPi.](https://pypi.org/project/feynplots/)
