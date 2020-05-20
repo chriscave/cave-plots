@@ -337,6 +337,7 @@ class GraphPlot:
             axs[index].barh(range(len(ls)), values)
             axs[index].set_yticks(range(len(ls)))
             axs[index].set_yticklabels(labels)
+            axs[index].set_title(label = cat_reg.name)
         return fig
 
 
