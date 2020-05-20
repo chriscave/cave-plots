@@ -313,9 +313,20 @@ class GraphPlot:
                     title='Interaction ' + str(interaction._location) + ': ' + str(interaction.name))
         return fig
 
-    def cat_plot(self):
+    def cat_plot(self, figsize=(30,20)):
+        """
+        A figure of bar charts of weights of categorical registers
+
+        Keyword arguments:
+        figsize -- a tuple that determines the size of the figure
+        
+        Returns:
+        matplotlib.pyplot.figure -- A figure containing the barplots of weights of the categories for each categorical register.
+        """
+
+
         cat_regs = [self.graph[i] for i in range(len(self.graph)) if self.graph[i].type == 'cat']
-        fig, axs = plt.subplots(nrows = len(cat_regs), ncols = 1))
+        fig, axs = plt.subplots(nrows = len(cat_regs), ncols = 1,figsize=figsize)
 
         for cat_reg in cat_regs:
             ls = cat_reg.state.categories
@@ -325,8 +336,8 @@ class GraphPlot:
             index = cat_regs.index(cat_reg)
             axs[index].barh(range(len(ls)), values)
             axs[index].set_yticks(range(len(ls)))
-            axs[index].set_ytickslabels(labels)
-        return axs
+            axs[index].set_yticklabels(labels)
+        return fig
 
 
 
