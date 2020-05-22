@@ -18,6 +18,7 @@ class Funct:
         self.type = interaction.type #this reads the type function either tanh, sine, gaussian or multiply
         self.state = interaction.state._to_dict() #this is the dictionary of weights
         self.sources = interaction.sources #this is the amount of inputs the function should expect.
+        self.name = interaction.name
         
     def ev(self,input0,input1=0):
         '''
