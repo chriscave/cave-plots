@@ -4,6 +4,77 @@ from matplotlib.gridspec import GridSpec
 
 from collections import Counter
 
+class InteractionPlot:
+    def __init__(self,interaction):
+        self.interaction = interaction
+        self.type = self._get_type()
+
+    def _get_type(self):
+        if len(self.interaction.name) != 0:
+            return self.interaction.name
+
+        functs = ['sine','gaussian','linear','linear','multiply']
+        for funct in functs:
+            if funct in self.interaction.spec:
+                return funct
+
+    def _eval_interaction(self,input):
+        pass
+
+
+    
+    
+    
+    
+    @staticmethod
+    def _min_max_stand(x,input_range,output_range):
+        input_min = input_range[0]
+        input_max = input_range[1]
+        output_min = output_range[0]
+        output_max = output_range[1]
+        z = np.divide(np.subtract(x,input_min), np.subtract(input_max,input_min))
+        return np.add(np.multiply(z,np.subtract(output_max,output_min)),output_min)
+        
+    @staticmethod
+    def _multiply(x,y):
+        return np.multiply(x,y)
+    
+    @staticmethod
+    def _sine(k,x0,x):
+        return np.multiply(k,x) + x0
+
+    @staticmethod
+    def _tanh(x,y,w0,w1,bias):
+        return np.multiply(w0,x) + np.multiply(w1,y) + bias
+
+    @staticmethod
+    def _gaussian1d(x,w0,center0):
+        z = np.divide(np.square(np.subtract(x,center0)),w0)
+        return np.exp(-z)
+    
+    @staticmethod
+    def _gaussian2d(x,y,w0,w1,center0,center1):
+        z = np.divide(np.square(np.subtract(x,center0)),w0) + np.divide(np.square(np.subtract(y,center1)),w1)
+        return np.exp(-z)
+
+    @staticmethod
+    def _linear(x,y,w0,w1,bias):
+        return np.multiply(x,w0) + np.multiply(y,w1) + bias
+        
+
+
+
+
+    def _plot_interaction(self):
+        #plot function -- return axis
+        #scatter plot
+        #return axes
+        pass
+
+class GraphPlot:
+    def __init(self,graph):
+        pass
+
 
 
 
