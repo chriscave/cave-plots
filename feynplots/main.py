@@ -1,29 +1,75 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from matplotlib.gridspec import GridSpec
 
 from collections import Counter
 
-class InteractionPlot:
-    def __init__(self,interaction):
+"""class InteractionPlot:
+    def __init__(self,interaction,input_range,output_range):
         self.interaction = interaction
         self.type = self._get_type()
+        self.input_range = input_range
+        self.output_range = output_range
+
+    def _get_state_dict(self):
+        return self.interaction.state._to_dict()
 
     def _get_type(self):
         if len(self.interaction.name) != 0:
             return self.interaction.name
 
-        functs = ['sine','gaussian','linear','linear','multiply']
+        functs = ['sine','gaussian','linear','tanh','multiply']
         for funct in functs:
             if funct in self.interaction.spec:
                 return funct
+    
+    def _eval_interaction(self,inputs):
+        input_ranges = self.input_range
+        output_range = self.output_range        
+        funct = self._get_type()
+        state_dic = self._get_state_dict()
+        stand_inputs = []
 
-    def _eval_interaction(self,input):
+        for i in range(len(input_ranges)):
+            stand_inputs.append(self._min_max_stand(inputs[i],input_ranges[i],output_range=[-1,1]))
+
+        if funct == 'sine':
+            output = self._sine(stand_inputs,state_dic)
+        if funct == 'tanh':
+            output = self._tanh(stand_inputs,state_dic)
+        if funct == 'gaussian':
+            output = self._gaussian(stand_inputs,state_dic)
+        if funct == 'linear':
+            output = self._linear(stand_inputs,state_dic)
+        if funct == 'multiply':
+            output = self._multiply(stand_inputs)
+
+        stand_out = self._min_max_stand(output,input_range=[-1,1],output_range=output_range)
+        cols = ['input' + str(i) for i in range(len(input_ranges))] + ['output']
+        rows = [inputs,stand_out]
+
+        #return pd.DataFrame(rows,columns = cols)
+        return stand_out
+
+
+    def _plot_interaction(self):
+        #plot function -- return axis
+        #scatter plot
+        #return axes
         pass
 
+        """
+
+
+
+
+
+        
+
 
     
-    
+"""    
     
     
     @staticmethod
@@ -36,45 +82,46 @@ class InteractionPlot:
         return np.add(np.multiply(z,np.subtract(output_max,output_min)),output_min)
         
     @staticmethod
-    def _multiply(x,y):
-        return np.multiply(x,y)
+    def _multiply(inputs):
+        return np.multiply(inputs[0],inputs[1])
     
     @staticmethod
-    def _sine(k,x0,x):
-        return np.multiply(k,x) + x0
+    def _sine(inputs,dic):
+        return np.multiply(dic['k'],inputs[0]) + dic['x0']
 
     @staticmethod
-    def _tanh(x,y,w0,w1,bias):
-        return np.multiply(w0,x) + np.multiply(w1,y) + bias
+    def _tanh(inputs,dic):
+        output = np.multiply(dic['w0'],inputs[0]) + dic['bias']
+        if len(inputs) == 2:
+            output += np.multiply(dic['w1'],inputs[1])
+        return np.tanh(output)
 
     @staticmethod
-    def _gaussian1d(x,w0,center0):
-        z = np.divide(np.square(np.subtract(x,center0)),w0)
-        return np.exp(-z)
-    
+    def _gaussian(inputs,dic):
+        output = np.divide(np.square(np.subtract(inputs[0],dic['center0'])),dic['w0'])
+        if len(inputs) == 2:
+            output += np.divide(np.square(np.subtract(inputs[1],dic['center1'])),dic['w1'])
+        return np.exp(-output)
+        
     @staticmethod
-    def _gaussian2d(x,y,w0,w1,center0,center1):
-        z = np.divide(np.square(np.subtract(x,center0)),w0) + np.divide(np.square(np.subtract(y,center1)),w1)
-        return np.exp(-z)
+    def _linear(inputs,dic):
+        output = np.multiply(inputs[0],dic['w0']) + dic['bias']
+        if len(inputs) == 2:
+            output +=  np.multiply(inputs[1],dic['w1'])
 
-    @staticmethod
-    def _linear(x,y,w0,w1,bias):
-        return np.multiply(x,w0) + np.multiply(y,w1) + bias
+        
+        return output
         
 
 
 
 
-    def _plot_interaction(self):
-        #plot function -- return axis
-        #scatter plot
-        #return axes
-        pass
+    
 
-class GraphPlot:
+class _GraphPlot:
     def __init(self,graph):
         pass
-
+"""
 
 
 
@@ -86,10 +133,24 @@ class Funct:
     If the interaction is fixed, then the function is the destandardiser.
     '''
     def __init__(self,interaction):
-        self.type = interaction.type #this reads the type function either tanh, sine, gaussian or multiply
+        self.name = interaction.name
         self.state = interaction.state._to_dict() #this is the dictionary of weights
         self.sources = interaction.sources #this is the amount of inputs the function should expect.
-        self.name = interaction.name
+        self.spec = interaction.spec
+        self.type = self._get_interaction_type() #this reads the type function either tanh, sine, gaussian or multiply        
+
+
+    def _get_interaction_type(self):
+        if len(self.name) != 0:
+            if 'categories' in self.state:
+                return 'cat'
+            else:
+                return 'fixed'
+
+        functs = ['sine','gaussian','linear','tanh','multiply']
+        for funct in functs:
+            if funct in self.spec:
+                return funct
         
     def ev(self,input0,input1=0):
         '''
@@ -106,9 +167,18 @@ class Funct:
             return self.gaussian(x=input0,y=input1)
         elif self.type == 'tanh':
             return self.tanh(x=input0,y=input1)
+        elif self.type == 'linear':
+            return self.linear(x=input0, y=input1)
         elif self.type == 'multiply':
             return self.multiply(input0,input1)
         
+    
+    def linear(self,x,y):
+        z = np.multiply(self.state['w0'],x) + np.multiply(self.state['w1'],y) + self.state['bias']
+        z_new = np.where(z > 1, 1, z)
+        z_dble_new = np.where(z_new < -1, -1, z_new)
+        return z_dble_new
+    
     def destandardise(self,x):
         '''
         This is the destandardiser at the output register. The graphs output [-1,1] and then get destandardise to the range of the target feature
@@ -296,7 +366,30 @@ class GraphPlot:
                 interactions_evaluation[i][j] = self.graph[j].activation #Then find the activation value
             interactions_evaluation[i][-1] = destandardiser.ev(interactions_evaluation[i][-1]) #This is destandardising the last value in each row
         self.eval = interactions_evaluation
-    
+
+    @staticmethod
+    def _get_interaction_type(interaction):
+        if len(interaction.name) != 0:
+            if 'categories' in interaction.state._to_dict():
+                return 'cat'
+            else:
+                return 'fixed'
+
+        functs = ['sine','gaussian','linear','tanh','multiply']
+        for funct in functs:
+            if funct in interaction.spec:
+                return funct
+
+    @staticmethod
+    def _get_interaction_name(interaction):
+        if len(interaction.name) != 0:
+            return interaction.name
+
+        functs = ['sine','gaussian','linear','tanh','multiply']
+        for funct in functs:
+            if funct in interaction.spec:
+                return funct
+
     def plot(self,colour = None, figsize=(30,20),alpha=None):
         """
         Creates a figure that contains all plots of interactions
@@ -322,10 +415,10 @@ class GraphPlot:
         if colour is None:
             colour =  self.data[output_reg.name]
 
-        interactions = [self.graph[i] for i in range(len(self.graph)) if (self.graph[i].type != 'fixed' and self.graph[i].type !='cat')] #Every interaction the requires a chart
+        interactions = [self.graph[i] for i in range(len(self.graph)) if len(self.graph[i].name) == 0] #Every interaction the requires a chart
 
         for interaction, coord in zip(interactions,coords):
-            location = interaction._location
+            location = interaction._index
             chart = Chart(Funct(interaction))
             inputs = []
             input_scalar_ranges = []
@@ -333,7 +426,7 @@ class GraphPlot:
                 '''
                 This goes through each source of the interaction and determines the inputs 
                 '''
-                if self.graph[source].type == 'fixed':
+                if GraphPlot._get_interaction_type(self.graph[source]) == 'fixed':
                     '''
                     When the source is a numerical register then the inputs comes from the data.
                     '''
@@ -341,7 +434,7 @@ class GraphPlot:
                     feature_min = self.graph[source].state._to_dict()['feature_min']
                     feature_max = self.graph[source].state._to_dict()['feature_max']
                     input_scalar_ranges.append([[feature_min, feature_max],[-1,1]]) #The ranges of the input for the chart
-                elif self.graph[source].type == 'cat':
+                elif GraphPlot._get_interaction_type(self.graph[source]) == 'cat':
                     '''
                     When the source is a categorical register then the inputs come from the weights at that register.
                     Fortunately this is done by the activation function at the register
@@ -376,14 +469,16 @@ class GraphPlot:
             
             #Below is labelling the axes
             if len(inputs) == 1:
-                ax.set(xlabel=self.graph[interaction.sources[0]].name + ', loc: ' + str(self.graph[interaction.sources[0]]._location),
-                    ylabel=interaction.name + ', loc: ' + str(interaction._location),
-                    title='Interaction ' + str(interaction._location)  + ': ' + str(interaction.name))
+                ax.set(xlabel=GraphPlot._get_interaction_name(self.graph[interaction.sources[0]]) + ', loc: ' + str(self.graph[interaction.sources[0]]._index),
+                    ylabel=GraphPlot._get_interaction_name(interaction) + ', loc: ' + str(interaction._index),
+                    title='Interaction ' + str(interaction._index)  + ': ' + str(GraphPlot._get_interaction_name(interaction)))
             else:
-                ax.set(xlabel=self.graph[interaction.sources[0]].name + ', loc: ' + str(self.graph[interaction.sources[0]]._location),
-                    ylabel=self.graph[interaction.sources[1]].name + ', loc: ' + str(self.graph[interaction.sources[1]]._location),
-                    title='Interaction ' + str(interaction._location) + ': ' + str(interaction.name))
+                ax.set(xlabel=GraphPlot._get_interaction_name(self.graph[interaction.sources[0]]) + ', loc: ' + str(self.graph[interaction.sources[0]]._index),
+                    ylabel=GraphPlot._get_interaction_name(self.graph[interaction.sources[1]]) + ', loc: ' + str(self.graph[interaction.sources[1]]._index),
+                    title='Interaction ' + str(interaction._index) + ': ' + str(GraphPlot._get_interaction_name(interaction)))
         return fig
+
+
 
     def cat_plot(self, figsize=(30,20)):
         """
@@ -397,7 +492,7 @@ class GraphPlot:
         """
 
 
-        cat_regs = [self.graph[i] for i in range(len(self.graph)) if self.graph[i].type == 'cat']
+        cat_regs = [self.graph[i] for i in range(len(self.graph)) if GraphPlot._get_interaction_type(self.graph[i]) == 'cat']
         fig, axs = plt.subplots(nrows = len(cat_regs), ncols = 1,figsize=figsize)
 
         for cat_reg in cat_regs:
@@ -420,7 +515,7 @@ class GraphPlot:
         '''
         Given a graph, this provides the coordinates needed for the gridreference in a plot
         '''
-        precoord1 = [graph[i].depth for i in range(len(graph)) if (graph[i].type != 'fixed' and graph[i].type !='cat')] #depth of each interaction that is not a register
+        precoord1 = [graph[i].depth for i in range(len(graph)) if len(graph[i].name) == 0] #depth of each interaction that is not a register
         max_height = max(Counter(precoord1).values()) #maximum amount of interactions in a row in the graph
         max_depth = max(precoord1)+1 #maximum amount of interactions in a columns in the graph
         precoord0 = []
