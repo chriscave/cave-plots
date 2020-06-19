@@ -10,7 +10,7 @@ with open('README.md') as f:
 with open('LICENSE') as f:
     license = f.read()
 
-requirements = ['feyn >= 1.2.1', 'numpy >= 1.18.1', 'matplotlib >= 3.1.3']
+requirements = ['feyn = 1.2.*', 'numpy >= 1.18.1', 'matplotlib >= 3.1.3']
 
 setup(
     name='feynplots',
